@@ -1,0 +1,14 @@
+:root {
+  --ofa-primary: #1f2937;
+  --ofa-accent: #4f46e5;
+  --ofa-background: #ffffff;
+  --ofa-text: #111827;
+}
+
+body.ofa-theme {
+  background: var(--ofa-background);
+  color: var(--ofa-text);
+}
+
+.header, .navbar { background: var(--ofa-primary); }
+.button-primary { background: var(--ofa-accent); color: #fff; }
