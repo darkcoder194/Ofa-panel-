@@ -1,7 +1,7 @@
 <template>
   <div class="color-picker">
     <label v-if="label">{{ label }}</label>
-    <input type="color" v-model="value" @input="$emit('update:value', value)" />
+    <input type="color" :value="value" @input="$emit('update:value', $event.target.value)" />
   </div>
 </template>
 
