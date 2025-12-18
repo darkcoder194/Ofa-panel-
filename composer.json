@@ -1,0 +1,33 @@
+{
+  "name": "darkcoder194/ofa-panel",
+  "description": "OFA (One For All) extension for Pterodactyl",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "DarkCoder\\Ofa\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "DarkCoder\\Ofa\\OfaServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "require-dev": {
+    "phpunit/phpunit": "^9.5",
+    "orchestra/testbench": "^7"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/",
+      "App\\": "tests/",
+      "Database\\Factories\\": "tests/database/factories/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  }
+}

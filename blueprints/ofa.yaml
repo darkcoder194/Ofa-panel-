@@ -1,0 +1,18 @@
+# OFA blueprint manifest (placeholder)
+# Run: php artisan blueprint:install ofa
+
+name: ofa
+version: 0.0.1
+description: "One For All - Theme & extension pack for Pterodactyl"
+author: "Dark Coder (Amrit Yadav)"
+
+components:
+  - name: config
+    description: OFA configuration files
+  - name: migrations
+    description: Database migrations for OFA features
+  - name: seeders
+    description: Initial settings and admin user (placeholder)
+
+notes:
+  - This is a placeholder manifest. Implement the artisan installer command and blueprint registration in the Pterodactyl extension system.

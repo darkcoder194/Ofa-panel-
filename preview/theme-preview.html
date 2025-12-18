@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OFA Theme Preview</title>
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; padding: 20px; }
+    .header { padding: 12px 20px; border-radius: 8px; color: #fff; margin-bottom: 16px }
+  </style>
+</head>
+<body>
+  <h1>OFA Theme Manager — Live Dev Preview</h1>
+  <p>This preview runs the Vue admin app via Vite dev server and uses a mock API to simulate backend endpoints.</p>
+
+  <div id="ofa-theme-app"></div>
+
+  <!-- Vite dev client and module import (served by `npm run dev`) -->
+  <script type="module">
+    // Simple in-memory mock for the OFA theme endpoints
+    (function(){
+      const palettes = [
+        { id: 1, name: 'Dark Coder Default', slug: 'dark-coder-default', is_default: true, colors: { primary: '#0f172a', accent: '#7c3aed', background: '#0b1220', text: '#e6eef8' } },
+        { id: 2, name: 'Light', slug: 'light', is_default: false, colors: { primary: '#1f2937', accent: '#4f46e5', background: '#ffffff', text: '#111827' } },
+      ];
+
+      let nextId = 3;
+      let previewId = null;
+
+      const origFetch = window.fetch.bind(window);
+      window.fetch = async function(input, init){
+        const url = (typeof input === 'string') ? input : input.url;
+        const method = (init && init.method) ? init.method.toUpperCase() : 'GET';
+
+        // GET /admin/ofa/themes
+        if (url.endsWith('/admin/ofa/themes') && method === 'GET') {
+          return new Response(JSON.stringify(palettes), { status: 200, headers: { 'Content-Type':'application/json' } });
+        }
+
+        // POST /admin/ofa/themes
+        if (url.endsWith('/admin/ofa/themes') && method === 'POST') {
+          const body = JSON.parse(init.body || '{}');
+          const pal = { id: nextId++, name: body.name || 'Untitled', slug: body.slug || 'untitled-'+Date.now(), colors: body.colors || {}, is_default: !!body.is_default };
+          if (pal.is_default) palettes.forEach(p => p.is_default = false);
+          palettes.push(pal);
+          applyDefault();
+          return new Response(JSON.stringify(pal), { status: 201, headers: { 'Content-Type':'application/json' } });
+        }
+
+        // POST set default: /admin/ofa/themes/{id}/default
+        const mDefault = url.match(/\/admin\/ofa\/themes\/(\d+)\/default$/);
+        if (mDefault && method === 'POST') {
+          const id = parseInt(mDefault[1], 10);
+          palettes.forEach(p => p.is_default = (p.id === id));
+          applyDefault();
+          const pal = palettes.find(p => p.id === id);
+          return new Response(JSON.stringify(pal), { status: 200, headers: { 'Content-Type':'application/json' } });
+        }
+
+        // DELETE /admin/ofa/themes/{id}
+        const mDelete = url.match(/\/admin\/ofa\/themes\/(\d+)$/);
+        if (mDelete && method === 'DELETE') {
+          const id = parseInt(mDelete[1], 10);
+          const ix = palettes.findIndex(p=>p.id===id);
+          if (ix >= 0) { palettes.splice(ix,1); applyDefault(); }
+          return new Response(null, { status: 204 });
+        }
+
+        // POST preview /admin/ofa/themes/{id}/preview
+        const mPreview = url.match(/\/admin\/ofa\/themes\/(\d+)\/preview$/);
+        if (mPreview && method === 'POST') {
+          const id = parseInt(mPreview[1], 10);
+          previewId = id;
+          applyPreview();
+          const pal = palettes.find(p => p.id === id);
+          return new Response(JSON.stringify(pal), { status: 200, headers: { 'Content-Type':'application/json' } });
+        }
+
+        // POST preview/clear
+        if (url.endsWith('/admin/ofa/preview/clear') && method === 'POST') {
+          previewId = null;
+          applyDefault();
+          return new Response(null, { status: 204 });
+        }
+
+        // Otherwise, fallback to actual fetch
+        return origFetch(input, init);
+      };
+
+      function applyDefault(){
+        const def = palettes.find(p => p.is_default) || palettes[0];
+        setCssVars(def.colors);
+      }
+
+      function applyPreview(){
+        const p = palettes.find(x => x.id === previewId);
+        if (p) setCssVars(p.colors);
+      }
+
+      function setCssVars(colors){
+        const root = document.documentElement;
+        Object.keys(colors).forEach(k => root.style.setProperty('--ofa-'+k, colors[k]));
+        // apply to header for demo
+        document.querySelectorAll('.header').forEach(el => {
+          el.style.background = colors.primary;
+          el.style.color = colors.text;
+        });
+      }
+
+      // Initially apply default
+      applyDefault();
+    })();
+
+    // Import the Vite dev client then load the app entry
+    const devClient = document.createElement('script');
+    devClient.type = 'module';
+    devClient.src = `${location.origin}/@vite/client`;
+    document.head.appendChild(devClient);
+
+    const moduleScript = document.createElement('script');
+    moduleScript.type = 'module';
+    moduleScript.src = `${location.origin}/resources/js/admin/app.js`;
+    document.body.appendChild(moduleScript);
+  </script>
+</body>
+</html>
