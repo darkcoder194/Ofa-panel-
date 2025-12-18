@@ -80,6 +80,50 @@ class ThemeController extends Controller
         return response()->json($palette);
     }
 
+    public function export(ThemePalette $palette)
+    {
+        $filename = 'palette-'.$palette->slug.'.json';
+        $payload = $palette->toArray();
+
+        return response()->streamDownload(function() use ($payload) {
+            echo json_encode($payload, JSON_PRETTY_PRINT);
+        }, $filename, ['Content-Type' => 'application/json']);
+    }
+
+    public function import(Request $request)
+    {
+        // Accept raw JSON body or posted data
+        $data = json_decode($request->getContent(), true) ?: $request->input();
+
+        if (!is_array($data)) {
+            return response()->json(['message' => 'Invalid JSON payload'], 422);
+        }
+
+        // If slug exists, update existing palette
+        if (!empty($data['slug']) && $existing = ThemePalette::where('slug', $data['slug'])->first()) {
+            $existing->update($data);
+            return response()->json($existing, 200);
+        }
+
+        $validator = \Validator::make($data, [
+            'name' => 'required|string|max:191',
+            'slug' => 'required|string|max:191|unique:ofa_theme_palettes,slug',
+            'colors' => 'required|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $palette = ThemePalette::create($data + ['is_default' => $data['is_default'] ?? false]);
+
+        if ($palette->is_default) {
+            ThemePalette::where('id', '!=', $palette->id)->update(['is_default' => false]);
+        }
+
+        return response()->json($palette, 201);
+    }
+
     public function clearPreview()
     {
         session()->forget('ofa_preview_palette');

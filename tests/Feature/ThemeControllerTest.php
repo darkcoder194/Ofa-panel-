@@ -90,5 +90,31 @@ class ThemeControllerTest extends TestCase
         $res->assertOk();
         $this->assertDatabaseHas('ofa_theme_palettes', ['id' => $p->id, 'name' => 'Updated']);
     }
+
+    public function test_admin_can_export_palette()
+    {
+        $user = \App\Models\User::factory()->create(['root_admin' => 1]);
+        $p = ThemePalette::factory()->create(['slug' => 'exp', 'colors' => ['primary' => '#000000']]);
+
+        $res = $this->actingAs($user)->get("/admin/ofa/themes/{$p->id}/export");
+        $res->assertOk();
+        $content = json_decode($res->getContent(), true);
+        $this->assertEquals('exp', $content['slug']);
+    }
+
+    public function test_admin_can_import_palette()
+    {
+        $user = \App\Models\User::factory()->create(['root_admin' => 1]);
+
+        $payload = [
+            'name' => 'Imported',
+            'slug' => 'imported',
+            'colors' => ['primary' => '#111111']
+        ];
+
+        $res = $this->actingAs($user)->postJson('/admin/ofa/themes/import', $payload);
+        $res->assertStatus(201);
+        $this->assertDatabaseHas('ofa_theme_palettes', ['slug' => 'imported']);
+    }
 }
 

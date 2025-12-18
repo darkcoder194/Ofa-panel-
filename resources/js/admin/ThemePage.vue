@@ -11,6 +11,7 @@
             <button @click="setDefault(p)">Set Default</button>
             <button @click="previewPalette(p)">Preview</button>
             <button @click="editPalette(p)">Edit</button>
+            <button @click="exportPalette(p)">Export</button>
             <button @click="deletePalette(p)">Delete</button>
           </div>
         </div>
@@ -19,6 +20,8 @@
 
     <div class="controls">
       <button @click="clearPreview">Clear Preview</button>
+      <button @click="openImport">Import Palette</button>
+      <input ref="importFile" type="file" style="display:none" @change="handleFile" accept="application/json,.json" />
     </div>
 
     <div class="create">
@@ -162,6 +165,47 @@ export default {
       if (!confirm('Delete this palette?')) return;
       const res = await fetch(`/admin/ofa/themes/${p.id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': this.csrfToken() } });
       if (res.ok) await this.fetchPalettes();
+    },
+    async exportPalette(p) {
+      const res = await fetch(`/admin/ofa/themes/${p.id}/export`, { headers: { 'X-CSRF-TOKEN': this.csrfToken() } });
+      if (!res.ok) { alert('Export failed'); return; }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `palette-${p.slug}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    },
+    openImport() {
+      this.$refs.importFile.click();
+    },
+    handleFile(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const json = JSON.parse(reader.result);
+          const res = await fetch('/admin/ofa/themes/import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.csrfToken() },
+            body: JSON.stringify(json),
+          });
+          if (res.ok) {
+            await this.fetchPalettes();
+            alert('Palette imported');
+          } else {
+            const txt = await res.text();
+            alert('Import failed: ' + txt);
+          }
+        } catch (err) {
+          alert('Invalid JSON file');
+        }
+      };
+      reader.readAsText(file);
     },
   },
 };

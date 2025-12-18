@@ -14,6 +14,10 @@ Route::group(['prefix' => 'admin/ofa', 'middleware' => ['web', 'auth', 'ofa.admi
     Route::delete('themes/{palette}', [ThemeController::class, 'destroy']);
     Route::post('themes/{palette}/default', [ThemeController::class, 'setDefault']);
     Route::post('themes/{palette}/preview', [ThemeController::class, 'preview']);
+
+    // Export/import palettes
+    Route::get('themes/{palette}/export', [ThemeController::class, 'export']);
+    Route::post('themes/import', [ThemeController::class, 'import']);
 });
 
 // Public route for frontend to clear preview (admin only as well)
