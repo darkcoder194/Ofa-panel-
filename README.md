@@ -70,6 +70,8 @@ Include the OFA blade partial in your panel layout (for example in `layouts/app.
 @include('vendor.ofa.partials.ofa-theme')
 ```
 
+If you want to use OFA as a Pterodactyl *theme* rather than an extension UI, you can copy the compiled CSS into a `public/themes/ofa/` folder and load it from the panel base layout, or use the provided sample manifest (`preview/pterodactyl-theme.json`) and `resources/css/themes/pterodactyl-default.css` as a starting point.
+
 Compile the admin JS for the theme manager (simple example using Vite):
 
 - Add an entry to your `resources/js/app.js` or Vite config that imports `resources/js/admin/ThemePage.vue` and mounts it on `#ofa-theme-app`.

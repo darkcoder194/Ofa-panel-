@@ -1,0 +1,28 @@
+/* Pterodactyl default OFA theme variables (sample)
+   This file sets CSS variables used by `resources/css/ofa-theme.css`.
+   You can copy or import this file into the panel's base layout to apply the palette. */
+
+:root {
+  --ofa-color-primary: #2563eb;
+  --ofa-color-secondary: #06b6d4;
+  --ofa-color-surface: #0f172a;
+  --ofa-color-muted: #94a3b8;
+  --ofa-color-accent: #f97316;
+  --ofa-bg: #0b1220;
+  --ofa-text: #e6eef6;
+}
+
+/* Simple example overrides for common components */
+body {
+  background-color: var(--ofa-bg);
+  color: var(--ofa-text);
+}
+
+.btn-ofa {
+  background-color: var(--ofa-color-primary);
+  color: var(--ofa-text);
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+
+/* Add more rules as needed to tune the panel look */

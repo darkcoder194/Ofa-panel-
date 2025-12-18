@@ -1,0 +1,24 @@
+{
+  "name": "OFA Panel Theme (sample)",
+  "slug": "ofa-panel-default",
+  "version": "0.0.2",
+  "author": "darkcoder194",
+  "description": "Default OFA theme with palette presets and variables for Pterodactyl panel",
+  "panels": ["v1", "v2"],
+  "assets": {
+    "css": ["ofa-theme.css"],
+    "js": []
+  },
+  "palettes": {
+    "default": {
+      "name": "OFA Default",
+      "primary": "#2563eb",
+      "secondary": "#06b6d4",
+      "surface": "#0f172a",
+      "muted": "#94a3b8",
+      "accent": "#f97316",
+      "background": "#0b1220",
+      "text": "#e6eef6"
+    }
+  }
+}
