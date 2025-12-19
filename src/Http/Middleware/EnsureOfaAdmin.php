@@ -33,6 +33,18 @@ class EnsureOfaAdmin
             return $next($request);
         }
 
-        abort(403);
+        // Explicit permission via Gate or method (allow pluggable permission systems)
+        if (method_exists($user, 'hasPermission') && $user->hasPermission('manage-ofa')) {
+            return $next($request);
+        }
+
+        if (method_exists($user, 'can') && $user->can('manage-ofa')) {
+            return $next($request);
+        }
+
+        // Log denied attempt for auditing
+        logger()->warning('Unauthorized OFA admin access attempt', ['user_id' => $user->id ?? null, 'path' => $request->path()]);
+
+        abort(403, 'Forbidden');
     }
 }

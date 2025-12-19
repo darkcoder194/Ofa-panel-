@@ -28,6 +28,7 @@ class OfaServiceProvider extends ServiceProvider
 
             $this->commands([
                 \DarkCoder\Ofa\Console\InstallOfaCommand::class,
+                \DarkCoder\Ofa\Console\PackageThemeCommand::class,
             ]);
         }
 
@@ -41,6 +42,15 @@ class OfaServiceProvider extends ServiceProvider
         // Register middleware alias for admin-only routes
         $router = $this->app['router'];
         $router->aliasMiddleware('ofa.admin', \DarkCoder\Ofa\Http\Middleware\EnsureOfaAdmin::class);
+
+        // Define a gate for fine-grained control
+        \Illuminate\Support\Facades\Gate::define('manage-ofa', function ($user) {
+            if (! $user) return false;
+            if ((property_exists($user, 'root_admin') || isset($user->root_admin)) && $user->root_admin) return true;
+            if (method_exists($user, 'isAdmin') && $user->isAdmin()) return true;
+            if (isset($user->roles) && is_array($user->roles) && in_array('admin', $user->roles)) return true;
+            return false;
+        });
 
         // You can add translation loading here in the future
     }

@@ -16,6 +16,13 @@ class ThemeControllerTest extends TestCase
         $res->assertRedirect('/login');
     }
 
+    public function test_non_admin_forbidden()
+    {
+        $user = \App\Models\User::factory()->create(['root_admin' => 0]);
+        $res = $this->actingAs($user)->get('/admin/ofa/themes');
+        $res->assertStatus(403);
+    }
+
     public function test_admin_can_view_palettes()
     {
         $user = \App\Models\User::factory()->create(['root_admin' => 1]);

@@ -24,6 +24,13 @@
       <input ref="importFile" type="file" style="display:none" @change="handleFile" accept="application/json,.json" />
     </div>
 
+    <div class="branding-link" style="margin-top:12px">
+      <h3>Branding</h3>
+      <div>
+        <a href="#" @click.prevent="openBranding">Open Branding Controls</a>
+      </div>
+    </div>
+
     <div class="create">
       <h2>Create Palette</h2>
       <input v-model="newPalette.name" placeholder="Name" />
@@ -35,6 +42,24 @@
         </div>
       </div>
       <button @click="createPalette">Create</button>
+    </div>
+
+    <div class="server-tools" style="margin-top:20px; border-top:1px solid #e5e7eb; padding-top:12px">
+      <h3>Server Tools</h3>
+      <div>
+        <label>Server UUID</label>
+        <input v-model="serverUuid" placeholder="server-uuid" />
+      </div>
+      <div>
+        <label>Version</label>
+        <input v-model="serverVersion" placeholder="1.18.1" />
+        <button @click="requestVersionChange">Request Version Change</button>
+      </div>
+      <div>
+        <label>Egg</label>
+        <input v-model="serverEgg" placeholder="egg-id or slug" />
+        <button @click="requestEggChange">Request Egg Change</button>
+      </div>
     </div>
 
     <!-- Edit Modal -->
@@ -74,7 +99,13 @@ export default {
           background: '#ffffff',
           text: '#111827',
         },
-      },      editingPalette: null,    };
+      },
+      editingPalette: null,
+      // server tools
+      serverUuid: '',
+      serverVersion: '',
+      serverEgg: '',
+    };
   },
   created() {
     this.fetchPalettes();
@@ -140,6 +171,26 @@ export default {
         const def = this.palettes.find(p => p.is_default) || this.palettes[0];
         if (def) Object.keys(def.colors || {}).forEach(k => document.documentElement.style.setProperty('--ofa-'+k, def.colors[k]));
       }
+    },
+
+    async requestVersionChange() {
+      if (!this.serverUuid || !this.serverVersion) return alert('Please fill server UUID and version');
+      const res = await fetch('/admin/ofa/servers/request-change', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.csrfToken() },
+        body: JSON.stringify({ server_uuid: this.serverUuid, type: 'version', payload: { version: this.serverVersion } })
+      });
+      if (res.ok) { alert('Change requested'); this.serverVersion = ''; }
+      else alert('Request failed');
+    },
+
+    async requestEggChange() {
+      if (!this.serverUuid || !this.serverEgg) return alert('Please fill server UUID and egg');
+      const res = await fetch('/admin/ofa/servers/request-change', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.csrfToken() },
+        body: JSON.stringify({ server_uuid: this.serverUuid, type: 'egg', payload: { egg: this.serverEgg } })
+      });
+      if (res.ok) { alert('Change requested'); this.serverEgg = ''; }
+      else alert('Request failed');
     },
     editPalette(p) {
       // Clone the palette out so edits are local until saved
