@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 - Build: fixed `ColorPicker` Vue prop usage to avoid v-model-on-prop error
 - Tests: added test `User` model & factory, test-only migration, and guarded routes/views
 
+### Added
+- Theme: palette **import/export** API and admin UI (JSON import & export buttons)
+- Docs: Pterodactyl theme manifest (`preview/pterodactyl-theme.json`) and install guide
+- Release: compiled CSS/JS assets attached to release v0.0.2
+
 ## [0.0.1] - 2025-12-18
 ### Added
 - Initial release of OFA (One For All)
