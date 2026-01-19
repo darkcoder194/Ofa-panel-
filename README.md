@@ -8,6 +8,29 @@
 
 ---
 
+## 🚀 Quick Start (3 Commands)
+
+```bash
+# 1. Install
+composer require darkcoder194/ofa-panel
+
+# 2. Setup
+php artisan ofa:install
+
+# 3. Build
+npm install && npm run build
+```
+
+**Access:** `https://your-panel.com/admin/ofa`
+
+📖 **Full guides:**
+- [📦 Complete Installation Guide](INSTALL.md)
+- [🎯 Step-by-Step Setup](SETUP_GUIDE.md)
+- [🆘 Troubleshooting](TROUBLESHOOTING.md)
+- [⚡ Quick Reference](QUICK_START.md)
+
+---
+
 ## 1️⃣ Project Overview 🔧
 
 OFA is a Pterodactyl extension that provides an advanced theme and extension framework focused on secure admin-first customization. It adds server tools, plugin/mod installers, a recycle bin, AI suggestions, blueprint installation, and strict admin–user separation — all while keeping the Pterodactyl core unchanged.
@@ -17,48 +40,51 @@ OFA is a Pterodactyl extension that provides an advanced theme and extension fra
 ## 2️⃣ System Requirements (v1.0.5) ⚙️
 
 - OS: Ubuntu 20.04 / 22.04
-- PHP: 8.1+
+- PHP: 8.0+ (8.1+ recommended)
 - MySQL: 8.0+
-- Redis: Enabled
+- Redis: 6.0+ (recommended)
 - Node.js: 18+
 - Pterodactyl Panel: Latest stable
 - Wings: Latest
 
 ---
 
-## 3️⃣ Installation (Blueprint) 🚀
+## 3️⃣ Installation 🚀
 
-1. Upload OFA files to: `/var/www/pterodactyl`
-2. Run: `php artisan blueprint:install ofa`
-3. The installer validates dependencies and activates OFA modules.
-
-### Installing as a Laravel/Pterodactyl extension
-
-OFA is distributed as a PHP package that can be included in your Pterodactyl panel codebase. To register it:
-
-- Add the package to your project (or copy the files into `/var/www/pterodactyl`).
-- Run `composer dump-autoload` to register PSR-4 autoloading if you copied files manually.
-- If installed via Composer, package discovery will automatically register `DarkCoder\\Ofa\\OfaServiceProvider`.
-- Otherwise, register the service provider manually in `config/app.php`:
-
-```php
-'providers' => [
-    // Other service providers...
-    DarkCoder\\Ofa\\OfaServiceProvider::class,
-],
-```
-
-Then run:
+### Automated Installation (Recommended)
 
 ```bash
-php artisan vendor:publish --tag=config
-php artisan vendor:publish --tag=ofa-assets --force
-php artisan migrate
-php artisan db:seed --class=OfaThemeSeeder
-php artisan blueprint:install ofa
+cd /var/www/pterodactyl
+
+# One command does everything
+composer require darkcoder194/ofa-panel
+php artisan ofa:install
+npm install && npm run build
 ```
 
-This will publish the `config/ofa.php` file, the views, css and JS (`ofa-assets`), and migrations. The `blueprint:install ofa` command is a placeholder installer that validates environment requirements and prints next steps.
+### Interactive Installer
+
+```bash
+# Use the interactive setup script
+bash install.sh
+```
+
+### Manual Installation
+
+For detailed manual steps, see [INSTALL.md](INSTALL.md)
+
+```bash
+cd /var/www/pterodactyl
+
+# Step by step
+php artisan vendor:publish --provider="DarkCoder\Ofa\OfaServiceProvider" --tag=config
+php artisan vendor:publish --provider="DarkCoder\Ofa\OfaServiceProvider" --tag=ofa-assets --force
+php artisan migrate
+php artisan db:seed --class="DarkCoder\Ofa\Database\Seeders\OfaThemeSeeder"
+npm install && npm run build
+```
+
+📚 **See [INSTALL.md](INSTALL.md) for complete installation documentation.**
 
 ---
 
