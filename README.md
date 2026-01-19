@@ -2,7 +2,7 @@
 
 🧩 **OFA (One For All)** — Advanced Extension & Theme System for the Pterodactyl panel.
 
-**Version:** v0.0.1
+**Version:** v1.0.5
 **Panel Name:** Dark Coder
 **Base Platform:** Powered by Pterodactyl®
 
@@ -14,7 +14,7 @@ OFA is a Pterodactyl extension that provides an advanced theme and extension fra
 
 ---
 
-## 2️⃣ System Requirements (v0.0.1) ⚙️
+## 2️⃣ System Requirements (v1.0.5) ⚙️
 
 - OS: Ubuntu 20.04 / 22.04
 - PHP: 8.1+
